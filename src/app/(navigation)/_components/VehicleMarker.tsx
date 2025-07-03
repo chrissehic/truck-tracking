@@ -30,7 +30,6 @@ export function VehicleMarker({
       <TruckElectric
         size={20}
         color="var(--marker-foreground)"
-        strokeWidth={2.5}
       />
     );
 

@@ -1,59 +1,63 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useCallback, useState } from "react"
-import { useMap } from "react-leaflet"
-import L from "leaflet"
-import "leaflet-routing-machine"
-import type { Route } from "@/types"
-import { getLatLngNominatim } from "@/lib/helpers/getCoords"
+import { useEffect, useRef, useCallback } from "react";
+import { useMap } from "react-leaflet";
+import L from "leaflet";
+import "leaflet-routing-machine";
+import type { Route } from "@/types";
+import { useRouteWaypoints } from "@/hooks/useRoute";
 
 type RoutingComponentProps = {
-  route: Route
-  showRouting: boolean // New prop to control visibility
-}
+  route: Route;
+  showRouting: boolean;
+  onGeocodingLoading: (loading: boolean) => void;
+};
 
-const RoutingComponent = ({ route, showRouting }: RoutingComponentProps) => {
-  const map = useMap()
-  const controlRef = useRef<L.Routing.Control | null>(null)
-  const [waypoints, setWaypoints] = useState<[number, number][]>([])
-  const [isGeocoding, setIsGeocoding] = useState(true)
+const RoutingComponent = ({
+  route,
+  showRouting,
+  onGeocodingLoading,
+}: RoutingComponentProps) => {
+  const map = useMap();
+  const controlRef = useRef<L.Routing.Control | null>(null);
 
-  // Cleanup function
+  // Pre-fetch waypoints (happens immediately when route is available)
+  const { data: waypoints = [], isLoading } = useRouteWaypoints(route);
+
+  // Update loading state
+  useEffect(() => {
+    onGeocodingLoading(isLoading && showRouting);
+  }, [isLoading, showRouting, onGeocodingLoading]);
+
   const cleanupRoutingControl = useCallback(() => {
     if (controlRef.current && map) {
       try {
-        // Remove event listeners
-        // @ts-expect-error - This is a workaround to hide the container
-        controlRef.current.off()
-        // Remove control from map
-        map.removeControl(controlRef.current)
-        // Clear the reference
-        controlRef.current = null
+        //@ts-expect-error off should be part of required types for Leaflet Routing
+        controlRef.current.off();
+        map.removeControl(controlRef.current);
+        controlRef.current = null;
       } catch (error) {
-        console.error("Error during routing control cleanup:", error)
+        console.error("Error during routing control cleanup:", error);
       }
     }
-  }, [map])
+  }, [map]);
 
-  // Add routing control to map
   const addRoutingControl = useCallback(() => {
-    if (!map || isGeocoding || waypoints.length < 2 || controlRef.current) return
+    if (!map || waypoints.length < 2 || controlRef.current) return;
 
     const startIcon = L.divIcon({
       html: "🚦",
       className: "emoji-marker",
       iconSize: [36, 36],
       iconAnchor: [18, 18],
-    })
+    });
 
     const endIcon = L.divIcon({
       html: "🏁",
       className: "emoji-marker",
       iconSize: [36, 36],
       iconAnchor: [18, 18],
-    })
-
-    console.log("Adding routing control with waypoints:", waypoints)
+    });
 
     const control = L.Routing.control({
       waypoints: waypoints.map(([lat, lng]) => L.latLng(lat, lng)),
@@ -69,65 +73,37 @@ const RoutingComponent = ({ route, showRouting }: RoutingComponentProps) => {
       }),
       showAlternatives: false,
       show: false,
-      // @ts-expect-error - This is a workaround to hide the container
+      //@ts-expect-error createmarker doesn't seem to be in the required types
       createMarker: (i, waypoint, n) => {
         if (i === 0) {
-          return L.marker(waypoint.latLng, { icon: startIcon })
+          return L.marker(waypoint.latLng, { icon: startIcon });
         } else if (i === n - 1) {
-          return L.marker(waypoint.latLng, { icon: endIcon })
+          return L.marker(waypoint.latLng, { icon: endIcon });
         }
-        return null
+        return null;
       },
-    })
+    });
 
-    control.addTo(map)
-    controlRef.current = control
-  }, [map, waypoints, isGeocoding])
+    control.addTo(map);
+    controlRef.current = control;
+  }, [map, waypoints]);
 
-  // Geocode stops when route changes
+  // Control routing visibility
   useEffect(() => {
-    const geocodeStops = async () => {
-      if (!route?.stops?.length) return
-
-      setIsGeocoding(true)
-      try {
-        const coordinates = await Promise.all(
-          route.stops.map(async (stop) => {
-            if (stop.address) {
-              const { lat, lng } = await getLatLngNominatim(stop.address)
-              return [lat, lng]
-            }
-            return null
-          }),
-        )
-
-        setWaypoints(coordinates.filter(Boolean) as [number, number][])
-      } catch (error) {
-        console.error("Error during geocoding:", error)
-      }
-      setIsGeocoding(false)
-    }
-
-    geocodeStops()
-  }, [route])
-
-  // Control routing visibility based on showRouting prop
-  useEffect(() => {
-    if (showRouting && !isGeocoding && waypoints.length >= 2) {
-      addRoutingControl()
+    if (showRouting && waypoints.length >= 2) {
+      addRoutingControl();
     } else {
-      cleanupRoutingControl()
+      cleanupRoutingControl();
     }
-  }, [showRouting, addRoutingControl, cleanupRoutingControl, isGeocoding, waypoints])
+  }, [showRouting, addRoutingControl, cleanupRoutingControl, waypoints]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      cleanupRoutingControl()
-    }
-  }, [cleanupRoutingControl])
+      cleanupRoutingControl();
+    };
+  }, [cleanupRoutingControl]);
 
-  return null
-}
+  return null;
+};
 
-export default RoutingComponent
+export default RoutingComponent;

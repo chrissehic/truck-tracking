@@ -22,14 +22,23 @@ L.Icon.Default.mergeOptions({
 
 type MapProps = {
   viewDetails: (vehicleId: string) => void;
-  setMapRef: React.RefObject<L.Map | null>
-  vehicles: Vehicle[]
-  selectedVehicleId: string | null
-  showRouting: boolean
-  route?: Route | null
-}
+  setMapRef: React.RefObject<L.Map | null>;
+  vehicles: Vehicle[];
+  selectedVehicleId: string | null;
+  showRouting: boolean;
+  route?: Route | null;
+  setIsGeocodingLoading: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-export default function MyMap({ viewDetails, setMapRef, vehicles, selectedVehicleId, showRouting, route }: MapProps) {
+export default function MyMap({
+  viewDetails,
+  setMapRef,
+  vehicles,
+  selectedVehicleId,
+  showRouting,
+  route,
+  setIsGeocodingLoading,
+}: MapProps) {
   const defaultCenter = { lat: 40.7128, lng: -74.006 };
   const defaultZoom = 12;
 
@@ -68,14 +77,17 @@ export default function MyMap({ viewDetails, setMapRef, vehicles, selectedVehicl
           key={vehicle.vehicleId}
           viewDetails={() => viewDetails(vehicle.vehicleId)}
           vehicle={vehicle}
-          icon={vehicle.vehicleId === selectedVehicleId ? selectedIcon : defaultIcon}
+          icon={
+            vehicle.vehicleId === selectedVehicleId ? selectedIcon : defaultIcon
+          }
         />
       ))}
 
       {showRouting && route && (
-        <RoutingComponent 
+        <RoutingComponent
+          onGeocodingLoading={setIsGeocodingLoading}
           route={route}
-          showRouting={showRouting} 
+          showRouting={showRouting}
         />
       )}
     </MapContainer>

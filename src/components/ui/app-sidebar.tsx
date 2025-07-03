@@ -60,7 +60,7 @@ export function AppSidebar() {
                   className={cn(
                     "px-3 py-3 m-0 flex flex-row justify-center items-center rounded-md text-sm font-medium",
                     active === item.title
-                      ? "text-primary bg-secondary"
+                      ? "text-primary bg-accent"
                       : "text-primary/40 hover:text-primary/70 hover:bg-accent",
                   )}
                 >
@@ -79,7 +79,7 @@ export function AppSidebar() {
                   className={cn(
                     "cursor-pointer px-3 py-3 m-0 flex flex-row justify-center items-center rounded-md text-sm font-medium",
                     active === item.title
-                      ? "text-primary bg-secondary"
+                      ? "text-primary bg-accent"
                       : "text-primary/40 hover:text-primary/70 hover:bg-accent",
                   )}
                 >

@@ -1,12 +1,24 @@
+import { VEHICLE_DETAILS_WIDTH } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Bell, Search } from "lucide-react";
 import React from "react";
 
 const buttonClass = "rounded-full cursor-pointer flex flex-col items-center justify-center p-4 shadow-md border pointer-events-auto";
 
-function MapHeader() {
+type MapHeaderProps = {
+  showDetails?: boolean;
+};
+
+function MapHeader({ showDetails }: MapHeaderProps) {
   return (
-    <div className="absolute pointer-events-none top-0 right-0 h-fit bg-transparent w-full p-10 flex flex-row justify-end items-center gap-8 z-30">
+    <div 
+      style={{
+    width: showDetails ? `calc(100% - ${VEHICLE_DETAILS_WIDTH})` : "100%",
+  }}
+      className={cn(
+        "absolute pointer-events-none top-0 right-0 h-fit bg-transparent p-10 flex flex-row justify-end items-center gap-8 z-30 transition-all duration-300"
+      )}
+    >
       <div className="flex flex-1"></div>
 
       <div

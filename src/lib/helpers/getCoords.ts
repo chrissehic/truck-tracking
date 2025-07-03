@@ -8,7 +8,7 @@ export async function getLatLngNominatim(address: string): Promise<{ lat: number
   }
 
   const encodedAddress = encodeURIComponent(address);
-  const url = `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&limit=1`;
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&limit=5`;
 
   const response = await fetch(url, {
     headers: {
@@ -38,20 +38,3 @@ export async function getLatLngNominatim(address: string): Promise<{ lat: number
 
   return coords;
 }
-
-// export async function enrichStopsWithCoords(stops: Stop[]): Promise<Stop[]> {
-//   // Map over stops and fetch lat/lng, but only if not cached yet
-//   const enrichedStops = await Promise.all(
-//     stops.map(async (stop) => {
-//       try {
-//         const coords = await getLatLngNominatim(stop.address);
-//         return { ...stop, lat: coords.lat, lng: coords.lng };
-//       } catch (error) {
-//         console.error(error);
-//         // Return stop without lat/lng if geocoding fails
-//         return stop;
-//       }
-//     })
-//   );
-//   return enrichedStops;
-// }

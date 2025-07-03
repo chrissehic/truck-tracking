@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import type { Route } from '@/types/api'
+import type { LocationUpdate } from '@/types/api'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 
@@ -16,7 +16,7 @@ export async function GET(
     )
   }
 
-  const apiUrl = `${API_BASE}/vehicles/${encodeURIComponent(vehicleId)}/route`
+  const apiUrl = `${API_BASE}/vehicles/${encodeURIComponent(vehicleId)}/location`
 
   try {
     const res = await fetch(apiUrl, {
@@ -28,23 +28,23 @@ export async function GET(
 
     if (!res.ok) {
       return NextResponse.json(
-        { error: `Route for vehicle ${vehicleId} not found` },
+        { error: `Location for vehicle ${vehicleId} not found` },
         { status: res.status }
       )
     }
 
-    const routeData: Route = await res.json()
+    const locationData: LocationUpdate = await res.json()
 
-    // Validate the response matches our Route type
-    if (!routeData.routeId || !routeData.vehicleId || !routeData.stops) {
-      throw new Error('Invalid route data received from API')
+    // Validate the response matches our LocationUpdate type
+    if (!locationData.vehicleId || !locationData.location || locationData.speed === undefined) {
+      throw new Error('Invalid location data received from API')
     }
 
-    return NextResponse.json(routeData)
+    return NextResponse.json(locationData)
   } catch (error) {
-    console.error('Error fetching vehicle route:', error)
+    console.error('Error fetching vehicle location:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch vehicle route' },
+      { error: 'Failed to fetch vehicle location' },
       { status: 500 }
     )
   }

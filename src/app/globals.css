@@ -16,6 +16,8 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+  --color-marker-background: var(--marker-background);
+  --color-marker-foreground: var(--marker-foreground);
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
@@ -53,8 +55,8 @@
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.841 0.238 128.85); /* light mode lime */
+  --secondary-foreground: oklch(0.145 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
@@ -76,6 +78,8 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --marker-background: oklch(0.2 0 0); /* dark neutral marker background */
+  --marker-foreground: oklch(1 0 0); /* white marker foreground text/icon */
 }
 
 .dark {
@@ -87,7 +91,7 @@
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.922 0 0);
   --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
+  --secondary: oklch(0.7 0.2 128.85); /* darker lime in dark mode */
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
@@ -110,6 +114,18 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --map-tiles-filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg)
+    saturate(0.3) brightness(0.7);
+}
+
+.leaflet-control-container .leaflet-routing-container-hide {
+  display: none;
+}
+
+.emoji-marker {
+  font-size: 32px;
+  line-height: 1;
+  text-align: center;
 }
 
 @layer base {
@@ -122,15 +138,15 @@
 }
 
 .leaflet-popup-close-button {
-  color: var(--background) !important;
+  color: var(--marker-foreground) !important;
 }
 
 .leaflet-popup-tip {
-  background-color: var(--foreground) !important;
+  background-color: var(--marker-background) !important;
 }
 
 .leaflet-popup-content-wrapper {
-  background-color: var(--foreground) !important;
+  background-color: var(--marker-background) !important;
 }
 
 .leaflet-popup-content {
@@ -143,4 +159,10 @@
 
 .leaflet-popup {
   bottom: 8px !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .map-tiles {
+    filter: var(--map-tiles-filter, none);
+  }
 }

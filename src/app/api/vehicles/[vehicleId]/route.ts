@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import type { Vehicle } from '@/types/api'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL
 
@@ -15,10 +16,15 @@ export async function GET(
     )
   }
 
-  const apiUrl = `${API_BASE}/vehicles/${vehicleId}`
+  const apiUrl = `${API_BASE}/vehicles/${encodeURIComponent(vehicleId)}`
 
   try {
-    const res = await fetch(apiUrl)
+    const res = await fetch(apiUrl, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      next: { revalidate: 0 } // Disable caching
+    })
 
     if (!res.ok) {
       return NextResponse.json(
@@ -27,7 +33,12 @@ export async function GET(
       )
     }
 
-    const vehicleData = await res.json()
+    const vehicleData: Vehicle = await res.json()
+
+    // Validate the response matches our Vehicle type
+    if (!vehicleData.vehicleId || !vehicleData.model || !vehicleData.driver) {
+      throw new Error('Invalid vehicle data received from API')
+    }
 
     return NextResponse.json(vehicleData)
   } catch (error) {

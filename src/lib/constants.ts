@@ -1,0 +1,1 @@
+export const VEHICLE_DETAILS_WIDTH = '28rem';

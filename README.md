@@ -4,11 +4,9 @@ This project is a web application for real-time truck tracking. It allows users 
 
 ## Features
 
-- Real-time truck location tracking on a map
 - Display truck details and status
 - Route visualization
-- Responsive design for desktop and mobile
-- Integration with external APIs for geolocation
+- Integration with external APIs for map rendering and geocoding address-based locations
 
 ## Technologies Used
 
@@ -43,8 +41,8 @@ This project is a web application for real-time truck tracking. It allows users 
 ## Usage
 
 - Open the app in your browser at `http://localhost:3000`
-- View and track trucks in real-time on the map
-- Access truck details by clicking on markers
+- View and track trucks on the map
+- Access truck details by clicking on markers and "View details" button
 
 ## Limitations
 
@@ -55,10 +53,6 @@ This project is a web application for real-time truck tracking. It allows users 
 - **API Endpoint Limitations:**  
   All API endpoints currently provide static or mock data and do not support real-time updates via subscriptions or WebSocket connections. As a result, live tracking of truck locations is not available in this version. Implementing real-time data streaming would be essential for a fully functional live tracking experience.
 
-
-## Contributing
-
-Contributions are welcome! Please open issues or submit pull requests for improvements or bug fixes.
 
 ## License
 
